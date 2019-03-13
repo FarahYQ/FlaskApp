@@ -11,11 +11,24 @@ pw = db_info['mysql_password']
 host = db_info['mysql_host']
 db_name = db_info['mysql_db']
 db_uri = f'mysql://{user}:{pw}@{host}/{db_name}'
-
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
 db = SQLAlchemy(app)
 
+# Create class for users table
+class Users(db.Model):
+    __tablename__ = 'users'
+    name = db.Column('name', db.Unicode, primary_key= True)
+    age = db.Column('age', db.Integer)
+
+another = Users(name='Jake', age=25)
+db.session.add(another)
+db.session.commit()
+all_users = Users.query.filter_by(name='Jake').all()
+for siteUser in all_users:
+    db.session.delete(siteUser)
+db.session.commit()
+print(all_users)
 
 @app.route("/", methods = ['GET', 'POST'])
 def index():
